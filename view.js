@@ -1,9 +1,21 @@
 window.onload = createTable;
 
-let table = document.createElement('table')
+let table = document.createElement('table');
+
+function onTrTdClick(eventObj) {
+    let clickedElem = eventObj.target;
+    console.log(clickedElem);
+    let additionalInfoPopUp = document.createElement("div");
+
+    additionalInfoPopUp.innerHTML = clickedElem.getAttribute('info');
+    table.appendChild(additionalInfoPopUp);
+}
+
+table.addEventListener('click', onTrTdClick)
 
 function createTable() {
     let body = document.getElementsByTagName("body")[0]; // Took the 0th element, because getElementsByTagName returns array
+
 
     // Instances of both classes to use non-static methods (getBooks and getAuthors
     let bookService1 = new bookService();
@@ -41,18 +53,13 @@ function renderInnerTable(booksList, authorsList) {
     let count = 0; // count variable for the last row, which should shot the total count of books read
 
     for (let i = 0; i < booksList.length; i++) {
-
-        let newRow = document.createElement('tr');
-
         let book = booksList[i];
 
+        let newRow = document.createElement('tr');
+        newRow.setAttribute('id', `row${count}`);
 
-        newRow.setAttribute('id', `row${count}`) // Added an id on every row for later popups
         for (let prop in book) {
-
-            let newData;
-            let info;
-
+            let newData, info;
             if (prop === 'id') continue;        // We do not need an ID column
 
             newData = document.createElement('td');
@@ -66,17 +73,10 @@ function renderInnerTable(booksList, authorsList) {
                 info = authorById.print();
             }
 
+            // Each table data should contain an information about itself
+            newData.setAttribute('info', info);
+
             newRow.appendChild(newData);
-
-            newData.addEventListener('dblclick', () => {
-                    let additionalInfoPopUp = document.createElement("div");
-                    additionalInfoPopUp.innerHTML = info;
-                    newData.getElementsByTagName("div")[0] ?
-                        newData.removeChild(newData.getElementsByTagName("div")[0]) :
-                        newData.appendChild(additionalInfoPopUp);
-                }
-            );
-
         }
 
         count++;
@@ -89,13 +89,7 @@ function renderInnerTable(booksList, authorsList) {
     let totalCount = document.createElement('td')
     totalCount.setAttribute('colspan', 4)
     totalCount.setAttribute('align', 'center')
-    totalCount.innerHTML = `
-            Total
-            count
-            of
-            books
-            read
-            is ${count}`;
+    totalCount.innerHTML = `Total count of books read is ${count}`;
     lastRow.appendChild(totalCount)
     table.appendChild(lastRow);
 
