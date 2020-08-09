@@ -48,11 +48,12 @@ class bookModel {
      * book read on - 2019
      */
     print() {
-        console.log(
-            `Book id ${this.id}
-Book title ${this.title}
-Book pages count ${this.pageCount}
-Book read on ${this.read}`);
+        let res = `Book id: ${this.id}
+Book title: ${this.title}
+Book pages count: ${this.pageCount}
+Book read on: ${this.read}`
+        console.log(res);
+        return res;
     }
 }
 

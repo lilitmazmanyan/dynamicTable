@@ -1,9 +1,10 @@
 class authorModel {
     constructor(id, firstName, lastName, birthDate) {
+
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.birthDate = birthDate
+        this.birthDate = birthDate;
     }
 
     /**
@@ -49,8 +50,9 @@ class authorModel {
      *  author birthdate – 12 January 1876
      */
     print() {
-        console.log(`Author id: ${this.id}\nAuthor full name: ${this.firstName} ${this.lastName}\nAuthor birth date: ${this.birthDate.toLocaleString()}`
-        )
+        let res = `Author id: ${this.id}\nAuthor full name: ${this.firstName} ${this.lastName}\nAuthor birth date: ${this.birthDate.toLocaleString()}`;
+        console.log(res)
+        return res;
     }
 }
 
