@@ -7,24 +7,26 @@ class LibraryModel {
         LibraryModel.type = type;
     }
 
+    static checkIfValid(sortType) {
+        for (let type in LibraryModel.SortBy) {
+            if (LibraryModel.SortBy[type] === sortType) return true;
+        }
+        LibraryModel.throwErr('sortType')
+    }
+
     /**
      * @param books
      * @param sortType
      * @return sorted array according to parameters
      */
     static sortBooksByTitle(books, sortType) {
-        if (!(sortType in LibraryModel.SortBy)) {
-            LibraryModel.throwErr('sortType')
-        }
+        LibraryModel.checkIfValid(sortType)
 
         if (sortType === LibraryModel.SortBy["NoSorting"]) return books;
 
-        let res = books.sort((b1, b2) => {
-            return b1.title > b2.title ? 1 : b1.title === b2.title ? 0 : -1;
-        })
-
-        return sortType === LibraryModel.SortBy.Ascending ? res : res.reverse()
-
+        return books.slice().sort((b1, b2) => {
+            return b1.title >= b2.title ? sortType : -sortType;
+        });
     }
 
     /**
@@ -33,15 +35,11 @@ class LibraryModel {
      * @return sorted array according to parameters
      */
     static sortBooksByPageCount(books, sortType) {
-        if (!(sortType in LibraryModel.SortBy)) {
-            LibraryModel.throwErr('sortType')
-        }
+        LibraryModel.checkIfValid(sortType)
 
-        let result = books.slice().sort(function (b1, b2) {
-            return b1.pageCount - b2.pageCount
+        return books.slice().sort(function (b1, b2) {
+            return (b1.pageCount - b2.pageCount) * sortType
         })
-
-        return sortType === LibraryModel.SortBy["Ascending"] ? result : sortType === LibraryModel.SortBy["Descending"] ? result.reverse() : books;
     }
 
     /**
@@ -50,15 +48,12 @@ class LibraryModel {
      * @return sorted array according to parameters
      */
     static sortBooksByReadOn(books, sortType) {
-        if (!(sortType in LibraryModel.SortBy)) {
-            LibraryModel.throwErr('sortType')
-        }
+        LibraryModel.checkIfValid(sortType)
 
-        let result = books.slice().sort(function (b1, b2) {
-            return b1.read - b2.read;
+        return books.slice().sort(function (b1, b2) {
+            return (b1.read - b2.read) * sortType;
         })
 
-        return sortType === LibraryModel.SortBy["Ascending"] ? result : sortType === LibraryModel.SortBy["Descending"] ? result.reverse() : books;
     }
 
     /**
@@ -68,7 +63,7 @@ class LibraryModel {
      * @return sorted array according to parameters
      */
     static sortBooksByAuthorFullName(books, authors, sortType) {
-        if (!(sortType in LibraryModel.SortBy)) LibraryModel.throwErr('sortType')
+        LibraryModel.checkIfValid(sortType)
 
         return books.slice().sort(function (b1, b2) {
 
@@ -90,22 +85,15 @@ class LibraryModel {
      * @return sorted array according to parameters
      */
     static sortAuthorsByFullName(authors, sortType) {
-        if (!(sortType in LibraryModel.SortBy)) {
-            LibraryModel.throwErr('sortType')
-        }
-
-        if (sortType === LibraryModel.SortBy["NoSorting"]) {
-            return authors;
-        }
+        LibraryModel.checkIfValid(sortType)
 
         // used slice method to sort the copy of the array and not the original one
-        let res = authors.slice().sort((a1, a2) => {
+        return authors.slice().sort((a1, a2) => {
             let a1fullName = `${a1.firstName} ${a1.lastName}`
             let a2fullName = `${a2.firstName} ${a2.lastName}`
-            return a1fullName > a2fullName ? 1 : a1fullName === a2fullName ? 0 : -1;
+            return a1fullName >= a2fullName ? sortType : -sortType;
         })
 
-        return sortType === LibraryModel.SortBy["Ascending"] ? res : res.reverse();
 
     }
 
@@ -115,17 +103,14 @@ class LibraryModel {
      * @return sorted array according to parameters
      */
     static sortAuthorsByBirthDate(authors, sortType) {
-        if (!(sortType in LibraryModel.SortBy)) {
-            LibraryModel.throwErr('sortType')
-        }
+        LibraryModel.checkIfValid(sortType)
 
         if (sortType === LibraryModel.SortBy["NoSorting"]) return authors;
 
-        let res = authors.slice().sort(function (a1, a2) {
-            return a1.birthDate > a2.birthDate ? 1 : a1.birthDate === a2.birthDate ? 0 : -1;
+        return authors.slice().sort(function (a1, a2) {
+            return (a1.birthDate - a2.birthDate) * sortType;
         });
 
-        return sortType === LibraryModel.SortBy["Ascending"] ? res : res.reverse();
     }
 
     /**
@@ -188,9 +173,9 @@ class LibraryModel {
 
     //Indicates sorting type
     static SortBy = Object.freeze({
-        'Ascending': 'Ascending',
-        'Descending': 'Descending',
-        'NoSorting': 'NoSorting'
+        'Ascending': 1,
+        'Descending': -1,
+        'NoSorting': 0
     })
 
     //Throws exception in respect with the cause
@@ -204,9 +189,22 @@ class LibraryModel {
     }
 }
 
-let libraryForTest = new LibraryModel(LibraryModel.LibType.historical)
+class bookModel {
+    constructor(id, title, authorId, pageCount, read) {
+        (id < 0) ? bookModel.throwExc('id') :
+            pageCount <= 0 ? bookModel.throwExc('pageCount') :
+                read > new Date().getFullYear() ? bookModel.throwExc('readYear') : "";
+        this.id = id;
+        this.title = title;
+        this.authorId = authorId;
+        this.pageCount = pageCount;
+        this.read = read;
+    }
+}
 
-/*let b1 = new bookModel(1, "White Fang", 1, 500, 2019);
+let libraryForTest = new LibraryModel(LibraryModel.LibType.historical)
+/*
+let b1 = new bookModel(1, "White Fang", 1, 500, 2019);
 let b2 = new bookModel(2, "The Call of the Wild", 1, 356, 2018);
 let b3 = new bookModel(3, "Martin Eden", 1, 356, 2019);
 let b4 = new bookModel(4, "The Old Man and The Sea", 2, 300, 2018);
@@ -217,16 +215,30 @@ let b8 = new bookModel(8, "Oliver Twist", 4, 630, 2017);
 let b9 = new bookModel(9, "Great Expectations", 4, 250, 2019);
 let b10 = new bookModel(10, "Little Dorrit", 4, 654, 2018);
 
-let books = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10];*/
+let books = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10];
+*/
 /*
 console.log(LibraryModel.sortBooksByPageCount(books, LibraryModel.SortBy.Ascending));
+console.log('------------------------------------------------------------------------------')
 console.log(LibraryModel.sortBooksByReadOn(books, LibraryModel.SortBy.Descending));
+console.log('------------------------------------------------------------------------------')
 console.log(LibraryModel.sortBooksByReadOn(books, LibraryModel.SortBy.NoSorting));
+console.log('------------------------------------------------------------------------------')
+
 console.log(LibraryModel.sortBooksByTitle(books, LibraryModel.SortBy.Descending));
+*/
+
+/*
+let a1 = new authorModel(1, 'Jack ', 'London', new Date(-2965431480000));
+let a2 = new authorModel(2, 'Ernest', 'Hemingway', new Date(-2223169080000));
+let a3 = new authorModel(3, 'Mark', 'Twain', new Date(-4231450680000));
+let a4 = new authorModel(4, 'Charles', 'Dickens', new Date(-4982871480000))
 
 console.log(LibraryModel.sortAuthorsByFullName([a1, a2, a3, a4], LibraryModel.SortBy.Descending));
+console.log('------------------------------------------------------------------------------')
 console.log(LibraryModel.sortBooksByAuthorFullName(books, [a1, a2, a3, a4], LibraryModel.SortBy.Descending));
-
+*/
+/*
 console.log(LibraryModel.filterBooksByAuthorId(books, 4));
 console.log(LibraryModel.filterBooksByPageCount(books, 370, LibraryModel.filterType.Less));
 console.log(LibraryModel.filterBooksByReadOn(books, 2019));
