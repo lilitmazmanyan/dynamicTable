@@ -39,32 +39,63 @@ function initializeHeaders() {
  */
 function renderInnerTable(booksList, authorsList) {
     let count = 0; // count variable for the last row, which should shot the total count of books read
+
     for (let i = 0; i < booksList.length; i++) {
-        count++;
-        let book = booksList[i];
+
         let newRow = document.createElement('tr');
+
+        let book = booksList[i];
+
+
         newRow.setAttribute('id', `row${count}`) // Added an id on every row for later popups
         for (let prop in book) {
+
             let newData;
+            let info;
+
             if (prop === 'id') continue;        // We do not need an ID column
+
             newData = document.createElement('td');
-            if (prop !== 'authorId') {            // Author Ids need to be treated differently
+
+            if (prop !== 'authorId') {         // Author Ids need to be treated differently
                 newData.innerText = book[prop];
+                info = book.print();
             } else {                            // Taking authors full name to show in the table
                 let authorById = authorsList.find((author) => author.id === book.authorId);
-                newData.innerText = authorById.firstName + ' ' + authorById.lastName
+                newData.innerText = authorById.firstName + ' ' + authorById.lastName;
+                info = authorById.print();
             }
+
             newRow.appendChild(newData);
+
+            newData.addEventListener('dblclick', () => {
+                    let additionalInfoPopUp = document.createElement("div");
+                    additionalInfoPopUp.innerHTML = info;
+                    newData.getElementsByTagName("div")[0] ?
+                        newData.removeChild(newData.getElementsByTagName("div")[0]) :
+                        newData.appendChild(additionalInfoPopUp);
+                }
+            );
+
         }
+
+        count++;
         table.appendChild(newRow)
     }
 
-    // The last row should show the total count
+
+// The last row should show the total count
     let lastRow = document.createElement('tr')
     let totalCount = document.createElement('td')
     totalCount.setAttribute('colspan', 4)
     totalCount.setAttribute('align', 'center')
-    totalCount.innerHTML = `Total count of books read is ${count}`;
+    totalCount.innerHTML = `
+            Total
+            count
+            of
+            books
+            read
+            is ${count}`;
     lastRow.appendChild(totalCount)
     table.appendChild(lastRow);
 
