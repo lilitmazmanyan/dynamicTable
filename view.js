@@ -2,29 +2,31 @@ window.onload = createTable;
 
 let table = document.createElement('table');
 
+table.addEventListener('click', onTrTdClick)
+
 function onTrTdClick(eventObj) {
     let clickedElem = eventObj.target;
-    console.log(clickedElem);
-    let additionalInfoPopUp = document.createElement("div");
 
-    additionalInfoPopUp.innerHTML = clickedElem.getAttribute('info');
-    table.appendChild(additionalInfoPopUp);
+    console.log(clickedElem)
+    let additionalInfoPopUp = document.createElement('div');
+    additionalInfoPopUp.setAttribute('id', `popup`);
+    additionalInfoPopUp.innerText = clickedElem.getAttribute('info');
+
+    clickedElem.appendChild(additionalInfoPopUp);
+
 }
-
-table.addEventListener('click', onTrTdClick)
 
 function createTable() {
     let body = document.getElementsByTagName("body")[0]; // Took the 0th element, because getElementsByTagName returns array
-
 
     // Instances of both classes to use non-static methods (getBooks and getAuthors
     let bookService1 = new bookService();
     let authorService1 = new AuthorService()
 
-    initializeHeaders(table); // Adding headers
+    initializeHeaders(); // Adding headers
 
     Promise.all([bookService1.getBooksList(), authorService1.getAuthors()]).then(([booksList, authorsList]) => {
-            body.appendChild(renderInnerTable(booksList, authorsList));
+            body.appendChild(renderDataPart(booksList, authorsList));
         }
     )
 
@@ -49,7 +51,7 @@ function initializeHeaders() {
  * @param authorsList
  * @return table with the whole data
  */
-function renderInnerTable(booksList, authorsList) {
+function renderDataPart(booksList, authorsList) {
     let count = 0; // count variable for the last row, which should shot the total count of books read
 
     for (let i = 0; i < booksList.length; i++) {
