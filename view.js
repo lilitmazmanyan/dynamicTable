@@ -5,6 +5,9 @@ let table = document.createElement('table');
 table.addEventListener('click', onTrTdClick)
 
 function onTrTdClick(eventObj) {
+    if (document.getElementById('popup')) {
+        document.getElementById('popup').remove()
+    }
     let clickedElem = eventObj.target;
 
     console.log(clickedElem)
