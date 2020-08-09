@@ -1,0 +1,27 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table td, table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    font-family: "Calibri Light";
+}
+
+table tr:hover, table tr:nth-child(odd):hover {
+    background-color: #ddd;
+}
+
+table tr:nth-child(odd) {
+    background-color: #E9EBF4;
+}
+
+table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #9c89b8;
+    color: white;
+    font-family: "Copperplate Gothic Bold";
+}
